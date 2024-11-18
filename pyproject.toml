@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "linkedin-summarizer"
+version = "0.1.0"
+description = "A Multi-Agent Library to create Linkedin posts from Blog Posts"
+authors = ["Dhruv Kumar <141584754+SnookyDru@users.noreply.github.com>"]
+readme = "README.md"
+packages = [
+    { include = "linkedin_summarizer" }
+]
+
+[tool.poetry.dependencies]
+python = "3.12.4"
+langchain-google-genai = "^2.0.4"
+langchain = "^0.3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.0"
+
+[tool.poetry.scripts]
+linkedin-summarizer = "linkedin_summarizer.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
