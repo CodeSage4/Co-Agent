@@ -1,4 +1,4 @@
-#!C:\Users\Dhruv\Desktop\Prodigal\Linkedin_Summarizer\.venv\Scripts\python.exe
+#!C:\Users\Dhruv\Desktop\Prodigal\Linkedin_Summarizer\Co-Agent\.venv\Scripts\python.exe
 import sys
 from linkedin_summarizer.__main__ import main
 

@@ -32,7 +32,7 @@ export-env {
       }
     }
 
-    let virtual_env = r#'C:\Users\Dhruv\Desktop\Prodigal\Linkedin_Summarizer\.venv'#
+    let virtual_env = r#'C:\Users\Dhruv\Desktop\Prodigal\Linkedin_Summarizer\Co-Agent\.venv'#
     let bin = r#'Scripts'#
 
     let is_windows = ($nu.os-info.family) == 'windows'

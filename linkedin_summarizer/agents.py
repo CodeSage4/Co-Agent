@@ -24,7 +24,8 @@ class BaseAgent:
 
 class AssistantAgent(BaseAgent):
     def generate_summary(self, blog_content: str):
-        print("assistant agent generating:")
+        print("-------------------------------------------------------------")
+        print("ASSISTANT: \n Generating Summary... \n")
         prompt = [
             ("system", "Summarize the following blog content for a LinkedIn post."),
             ("human", blog_content)
@@ -33,12 +34,14 @@ class AssistantAgent(BaseAgent):
 
 class UserProxyAgent:
     def __init__(self, name: str, assistant: AssistantAgent):
-        print("user proxy agent speaking:")
+        print("-------------------------------------------------------------")
+        print("USER PROXY: \n Assistant Can you please Summarize the following blog content for a LinkedIn post")
         self.name = name
         self.assistant = assistant
 
     def review_summary(self, summary: str):
-        print("reviewing Summary")
+        print("-------------------------------------------------------------")
+        print("USER PROXY: \n Reviewing Summary... \n")
         prompt = [
             ("system", "Review the following LinkedIn summary for factual accuracy, grammar, legal compliance, and tone. List any required corrections or return with 'no correction' if the summary is ok. "),
             ("human", summary)
@@ -48,27 +51,36 @@ class UserProxyAgent:
     def initiate_summary_process(self, blog_id: str):
         blog_data = get_blog_data(blog_id)
         if not blog_data:
-            return "Blog data not found."
+            return "------------------------------------------------------------- \nASSISTANT: \n Blog data not found."
+        print("Blog_heading \n Blog_link")
 
         # Generate the initial summary
         summary = self.assistant.generate_summary(blog_data["blog_content"])
         summary = summary.content
         print(f"Initial Summary:\n{summary}")
 
-        while True:
+        i = 0
+        
+        while i < 5:
             review_feedback = self.review_summary(summary)
             review_feedback = review_feedback.content
-            print(f"Review Feedback:\n{review_feedback}")
+            print(f"Review Feedback:\n {review_feedback}")
 
             if "No correction" in review_feedback:
                 save_summary(blog_id, summary)
-                print("Summary approved and saved.")
+                print("-------------------------------------------------------------")
+                print("Summary approved and saved in the Database.")
+                print("-------------------------------------------------------------")
+                print(f"Final approved Summary:\n {summary}")
                 return summary
             else:
                 summary = self.refine_summary(summary, review_feedback)
+                print(f"Refined Summary: {summary}")
+                i = i+1
 
     def refine_summary(self, summary: str, feedback: str):
-        print("refining summary")
+        print("-------------------------------------------------------------")
+        print("ASSISTANT: \n Refining summary... \n")
         prompt = [
             ("system", f"Revise the summary based on the following feedback to ensure accuracy and compliance."),
             ("human", f"Summary: {summary}\nFeedback: {feedback}")
