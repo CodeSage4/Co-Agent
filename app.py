@@ -10,19 +10,13 @@ from linkedin_summarizer import AssistantAgent, UserProxyAgent, llm_config, agen
 
 # Streamlit UI setup
 st.title("Co-Agent")
-st.caption("Multi Agent Conversational Framework for exclusively designing 'Ready to post' and engaging LinkedIn Posts from just the Master URL of the blogs")
+st.caption("Multi-Agent Conversational Framework for designing 'Ready-to-Post' LinkedIn posts from blog URLs")
 
 # Input to get the Blog ID
 master_url = st.text_input("Enter Master URL of the Blog you want Co-Agent to make LinkedIn Posts of:")
 
-
-
 # Initialize database to store scraped articles
 database = {}
-
-
-# Input to trigger scraping
-#start_scraping = st.button("Start Scraping Google AI Blog")
 
 if master_url:
     # Initialize the Edge driver
@@ -55,18 +49,16 @@ if master_url:
 
         article_info.append((title, link))
 
-    # Fetch article content for the first link and save to the database
-    if article_info:
-        st.write_stream(agents.stream_data("Scraping the blogs..."))
-    
-        # Initialize agents (assistant and user proxy)
-        assistant = AssistantAgent(name="assistant", llm_config=llm_config)
-        user_proxy = UserProxyAgent(name="user_proxy", assistant=assistant)
-        
-        first_article = article_info[0]
-        title, link = first_article
+    # Fetch content for the first three articles and save them to the database
+    st.write_stream(agents.stream_data("Scraping the blogs..."))
+
+    # Initialize agents (assistant and user proxy)
+    assistant = AssistantAgent(name="assistant", llm_config=llm_config)
+    user_proxy = UserProxyAgent(name="user_proxy", assistant=assistant)
+
+    for index, (title, link) in enumerate(article_info[:3], start=1):  # Process only the first 3 articles
         driver.get(link)
-        
+
         try:
             # Wait for the article content to load
             article_content = WebDriverWait(driver, 30).until(
@@ -76,26 +68,28 @@ if master_url:
             content = "\n".join(paragraph.text.strip() for paragraph in paragraphs)
         except Exception as e:
             content = "Content not available"
-        
+
         # Store the article in the database
-        database["blog_1"] = {
+        database[f"blog_{index}"] = {
             "blog_heading": title,
             "blog_content": content,
             "blog_link": link,  # Include the link
             "linkedin_summary": None
         }
 
-        # Close the WebDriver once done
-        driver.quit()
+    # Close the WebDriver once done
+    driver.quit()
 
-        # Streamlit Display - Show only the first article
-        st.write("### First Article")
-        st.write(f"**{title}**")
-        st.write(f"[Read more]({link})")
-        st.write(content[:500])  # Display only the first 500 characters of the article content
+    # Streamlit Display - Show the first three articles
+    st.write("### First Three Articles")
+    for index, article in database.items():
+        st.write(f"**{article['blog_heading']}**")
+        st.write(f"[Read more]({article['blog_link']})")
+        st.write(article["blog_content"][:500])  # Display only the first 500 characters
+        st.write("---")
 
-        # Optionally display the database
-        st.write("### Database (Stored Articles)")
-        st.json(database)
-    else:
-        st.write("No articles found.")
+    # Optionally display the database
+    st.write("### Database (Stored Articles)")
+    st.json(database)
+else:
+    st.write("Enter a Master URL to begin scraping.")
