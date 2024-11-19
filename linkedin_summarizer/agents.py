@@ -1,5 +1,12 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .database import get_blog_data, save_summary
+import streamlit as st_a
+import time
+
+def stream_data(stream:str):
+    for word in stream.split(" "):
+        yield word + " "
+        time.sleep(0.02)
 
 class BaseAgent:
     def __init__(self, name: str, llm_config: dict):
@@ -24,8 +31,10 @@ class BaseAgent:
 
 class AssistantAgent(BaseAgent):
     def generate_summary(self, blog_content: str):
-        print("-------------------------------------------------------------")
-        print("ASSISTANT: \n Generating Summary... \n")
+        st_a.write("-------------------------------------------------------------")
+        st_a.write(" :violet[ASSISTANT:]")
+        st_a.caption("Generating summary...")
+        
         prompt = [
             ("system", "Summarize the following blog content for a LinkedIn post."),
             ("human", blog_content)
@@ -34,14 +43,16 @@ class AssistantAgent(BaseAgent):
 
 class UserProxyAgent:
     def __init__(self, name: str, assistant: AssistantAgent):
-        print("-------------------------------------------------------------")
-        print("USER PROXY: \n Assistant Can you please Summarize the following blog content for a LinkedIn post")
+        st_a.write("-------------------------------------------------------------")
+        st_a.write(" :orange[USER PROXY:]")
+        st_a.write_stream(stream_data(" Assistant, Can you please Summarize the following blog content for a LinkedIn post"))
         self.name = name
         self.assistant = assistant
 
     def review_summary(self, summary: str):
-        print("-------------------------------------------------------------")
-        print("USER PROXY: \n Reviewing Summary... \n")
+        st_a.write("-------------------------------------------------------------")
+        st_a.write(" :orange[USER PROXY:]")
+        st_a.caption(" Reviewing Summary... \n")
         prompt = [
             ("system", "Review the following LinkedIn summary for factual accuracy, grammar, legal compliance, and tone. List any required corrections or return with 'no correction' if the summary is ok. "),
             ("human", summary)
@@ -51,36 +62,53 @@ class UserProxyAgent:
     def initiate_summary_process(self, blog_id: str):
         blog_data = get_blog_data(blog_id)
         if not blog_data:
-            return "------------------------------------------------------------- \nASSISTANT: \n Blog data not found."
-        print("Blog_heading \n Blog_link")
+            st_a.write("-------------------------------------------------------------")
+            st_a.write(" :violet[ASSISTANT:]")
+            st_a.write_stream(stream_data(" :red[Blog data not found.]\n"))
+            
+        st_a.write(" Blog_heading \n Blog_link")
 
         # Generate the initial summary
         summary = self.assistant.generate_summary(blog_data["blog_content"])
         summary = summary.content
-        print(f"Initial Summary:\n{summary}")
+        st_a.write_stream(stream_data(f":blue[Initial Summary:]  {summary}"))
 
         i = 0
         
-        while i < 5:
+        while True:
             review_feedback = self.review_summary(summary)
             review_feedback = review_feedback.content
-            print(f"Review Feedback:\n {review_feedback}")
+            
+            st_a.write_stream(stream_data(f" :red[Review Feedback:]  {review_feedback}"))
 
             if "No correction" in review_feedback:
                 save_summary(blog_id, summary)
-                print("-------------------------------------------------------------")
-                print("Summary approved and saved in the Database.")
-                print("-------------------------------------------------------------")
-                print(f"Final approved Summary:\n {summary}")
+                st_a.write("-------------------------------------------------------------")
+                st_a.write_stream(stream_data(" :green[Summary approved] and saved in the Database"))
+                st_a.write("-------------------------------------------------------------")
+                st_a.write_stream(stream_data((f":green[Final approved Summary:]  {summary}")))
+                st_a.write("-------------------------------------------------------------")
                 return summary
+            
+            elif i == 5:
+                st_a.write("-------------------------------------------------------------")
+                st_a.write_stream(stream_data(f" :red[Summary is approved] with this :red[Review Feedback:]  {review_feedback}"))
+                st_a.write("-------------------------------------------------------------")
+                st_a.write_stream(stream_data((f":green[Final approved Summary:] {summary}")))
+                st_a.write("-------------------------------------------------------------")
+
             else:
                 summary = self.refine_summary(summary, review_feedback)
-                print(f"Refined Summary: {summary}")
+                st_a.write("-------------------------------------------------------------")
+                st_a.write(" :violet[ASSISTANT:]")
+                st_a.write_stream(stream_data(f":green[Refined Summary:]  {summary}"))
                 i = i+1
 
     def refine_summary(self, summary: str, feedback: str):
-        print("-------------------------------------------------------------")
-        print("ASSISTANT: \n Refining summary... \n")
+        st_a.write("-------------------------------------------------------------")
+        st_a.write(" :violet[ASSISTANT:]")
+        st_a.caption("Refining summary...")
+        
         prompt = [
             ("system", f"Revise the summary based on the following feedback to ensure accuracy and compliance."),
             ("human", f"Summary: {summary}\nFeedback: {feedback}")
