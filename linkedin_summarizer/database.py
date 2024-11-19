@@ -17,3 +17,9 @@ def save_summary(blog_id: str, summary: str):
         database[blog_id]["linkedin_summary"] = summary
         return True
     return False
+
+def get_blog_heading(blog_id):
+    return "blog heading"
+
+def get_blog_url(blog_id):
+    return "https://co-agent.streamlit.app/"

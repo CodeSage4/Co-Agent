@@ -1,5 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from .database import get_blog_data, save_summary
+from .database import get_blog_data, save_summary, get_blog_heading, get_blog_url
 import streamlit as st_a
 import time
 
@@ -61,12 +61,15 @@ class UserProxyAgent:
 
     def initiate_summary_process(self, blog_id: str):
         blog_data = get_blog_data(blog_id)
+        blog_heading = get_blog_heading(blog_id)
+        blog_url = get_blog_url(blog_id)
         if not blog_data:
             st_a.write("-------------------------------------------------------------")
             st_a.write(" :violet[ASSISTANT:]")
             st_a.write_stream(stream_data(" :red[Blog data not found.]\n"))
             
-        st_a.write(" Blog_heading \n Blog_link")
+        st_a.write(f"Blog Heading: {blog_heading}")
+        st_a.write(f"Blog URL: [link](%s)" % blog_url)
 
         # Generate the initial summary
         summary = self.assistant.generate_summary(blog_data["blog_content"])
