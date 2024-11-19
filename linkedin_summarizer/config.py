@@ -6,7 +6,7 @@ load_dotenv(find_dotenv())
 
 llm_config = {
     "model": "gemini-1.5-flash",
-    "api_key": os.getenv("GOOGLE_API_KEY"),
+    "api_key": GOOGLE_API_KEY,
     "temperature": 0.7,
     "max_tokens": 200,
     "max_retries": 2
