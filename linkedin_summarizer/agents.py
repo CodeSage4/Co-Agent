@@ -91,6 +91,7 @@ class UserProxyAgent:
                 st_a.write("-------------------------------------------------------------")
                 st_a.write_stream(stream_data((f":green[Final approved Summary:]  {summary}")))
                 st_a.write("-------------------------------------------------------------")
+                
                 return summary
             
             elif i == 5:
