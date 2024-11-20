@@ -103,6 +103,7 @@ class UserProxyAgent:
 
             else:
                 summary = self.refine_summary(summary, review_feedback)
+                summary = summary.content
                 st_a.write("-------------------------------------------------------------")
                 st_a.write(" :violet[ASSISTANT:]")
                 st_a.write_stream(stream_data(f":green[Refined Summary:]  {summary}"))
