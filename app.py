@@ -6,7 +6,7 @@ from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from linkedin_summarizer import AssistantAgent, UserProxyAgent, llm_config, agents
+from linkedin_summarizer import AssistantAgent, UserProxyAgent, llm_config, agents, database
 
 # Streamlit UI setup
 st.title("Co-Agent")
@@ -16,11 +16,11 @@ st.caption("Multi-Agent Conversational Framework for designing 'Ready-to-Post' L
 master_url = st.text_input("Enter Master URL of the Blog you want Co-Agent to make LinkedIn Posts of:")
 
 # Initialize database to store scraped articles
-database = {}
+db = {}
 
 if master_url:
     # Initialize the Edge driver
-    driver_path = r"C:\Users\Lenovo\Downloads\edgedriver_win64\msedgedriver.exe"
+    driver_path = r"C:\Users\Dhruv\Desktop\Prodigal\Linkedin_Summarizer\Co-Agent\edgedriver_win64\msedgedriver.exe"
     service = EdgeService(executable_path=driver_path)
     options = webdriver.EdgeOptions()
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
@@ -52,10 +52,7 @@ if master_url:
     # Fetch content for the first three articles and save them to the database
     st.write_stream(agents.stream_data("Scraping the blogs..."))
 
-    # Initialize agents (assistant and user proxy)
-    assistant = AssistantAgent(name="assistant", llm_config=llm_config)
-    user_proxy = UserProxyAgent(name="user_proxy", assistant=assistant)
-
+    
     for index, (title, link) in enumerate(article_info[:3], start=1):  # Process only the first 3 articles
         driver.get(link)
 
@@ -70,26 +67,27 @@ if master_url:
             content = "Content not available"
 
         # Store the article in the database
-        database[f"blog_{index}"] = {
+        db[f"blog_{index}"] = {
             "blog_heading": title,
             "blog_content": content,
             "blog_link": link,  # Include the link
             "linkedin_summary": None
         }
 
+    database.import_db(db)
     # Close the WebDriver once done
     driver.quit()
 
     # Streamlit Display - Show the first three articles
     st.write("### First Three Articles")
-    for index, article in database.items():
+    for index, article in db.items():
         st.write(f"**{article['blog_heading']}**")
         st.write(f"[Read more]({article['blog_link']})")
         st.write(article["blog_content"][:500])  # Display only the first 500 characters
         st.write("---")
 
-    # Optionally display the database
-    st.write("### Database (Stored Articles)")
-    st.json(database)
-else:
-    st.write("Enter a Master URL to begin scraping.")
+   # Initialize agents (assistant and user proxy)
+    assistant = AssistantAgent(name="assistant", llm_config=llm_config)
+    user_proxy = UserProxyAgent(name="user_proxy", assistant=assistant)
+
+    summary = user_proxy.initiate_summary_process("blog_1")

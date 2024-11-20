@@ -3,6 +3,10 @@
 # Simulated Shared Database (replace with a real database connection for production)
 database = {}
 
+def import_db(db: dict):
+    database = db
+
+
 def get_blog_data(blog_id: str):
     """Retrieve the blog data for a given blog ID."""
     return database.get(blog_id)
