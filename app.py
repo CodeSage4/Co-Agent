@@ -22,9 +22,9 @@ db = {}
 if master_url:
     # Initialize the Edge driver
     driver_dir = os.path.join(os.getcwd(), "edgedriver_win64")
-    st.write(driver_dir)
+    #st.write(driver_dir)
     driver_path = os.path.join(driver_dir, "msedgedriver.exe")
-    st.write(driver_path)
+    #st.write(driver_path)
     service = EdgeService(executable_path=driver_path)
     options = webdriver.EdgeOptions()
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
@@ -91,6 +91,7 @@ if master_url:
         st.write("---")
 
    # Initialize agents (assistant and user proxy)
+    st.subheader("Multi-Agent Chat started:")
     assistant = AssistantAgent(name="assistant", llm_config=llm_config)
     user_proxy = UserProxyAgent(name="user_proxy", assistant=assistant)
 
