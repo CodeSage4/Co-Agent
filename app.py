@@ -20,7 +20,7 @@ db = {}
 
 if master_url:
     # Initialize the Edge driver
-    driver_path = r"edgedriver_win64/msedgedriver.exe"
+    driver_path = r"/edgedriver_win64/msedgedriver.exe"
     service = EdgeService(executable_path=driver_path)
     options = webdriver.EdgeOptions()
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
