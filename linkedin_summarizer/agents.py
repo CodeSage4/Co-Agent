@@ -74,7 +74,7 @@ class UserProxyAgent:
         # Generate the initial summary
         summary = self.assistant.generate_summary(blog_data["blog_content"])
         if "Quota exceeded" in str(summary):
-            st_a.write("LLM API quota exceeded. Please check the API provider Request Quota Limit")
+            st_a.write(":red[LLM API quota exceeded. Please check the API provider Request Quota Limit]")
             return "LLM API quota exceeded. Please check the API provider Request Quota Limit"
         summary = summary.content
         st_a.write_stream(stream_data(f":blue[Initial Summary:]  {summary}"))
