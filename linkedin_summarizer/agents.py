@@ -63,6 +63,8 @@ class UserProxyAgent:
         blog_data = get_blog_data(blog_id)
         blog_heading = get_blog_heading(blog_id)
         blog_url = get_blog_url(blog_id)
+        formatter = Formatter(self.assistant)
+        
         if not blog_data:
             st_a.write("-------------------------------------------------------------")
             st_a.write(" :violet[ASSISTANT:]")
@@ -95,7 +97,9 @@ class UserProxyAgent:
                 st_a.write_stream(stream_data((f":green[Final approved Summary:]  {summary}")))
                 st_a.write("-------------------------------------------------------------")
                 
-                return summary
+                # Format the summary for LinkedIn using LLM
+                linkedin_post = formatter.format_for_linkedin(summary, blog_heading, blog_url)
+                return linkedin_post
             
             elif i == 5:
                 st_a.write("-------------------------------------------------------------")
@@ -103,6 +107,10 @@ class UserProxyAgent:
                 st_a.write("-------------------------------------------------------------")
                 st_a.write_stream(stream_data((f":green[Final approved Summary:] {summary}")))
                 st_a.write("-------------------------------------------------------------")
+
+                # Format the approved summary for LinkedIn using LLM
+                linkedin_post = formatter.format_for_linkedin(summary, blog_heading, blog_url)
+                return linkedin_post
 
             else:
                 summary = self.refine_summary(summary, review_feedback)
@@ -122,3 +130,35 @@ class UserProxyAgent:
             ("human", f"Summary: {summary}\nFeedback: {feedback}")
         ]
         return self.assistant.respond(prompt)
+
+class Formatter(BaseAgent):
+    def __init__(self, assistant: AssistantAgent):
+        self.assistant = assistant  # Use the AssistantAgent to interact with the LLM
+        st_a.write("-------------------------------------------------------------")
+        st_a.write(" :blue[FORMATTING:]")
+        st_a.caption("Initializing Formatter...")
+
+    def format_for_linkedin(self, summary: str, blog_heading: str, blog_url: str):
+        """
+        Formats the summary into a LinkedIn-ready post using the LLM.
+        """
+        st_a.write("-------------------------------------------------------------")
+        st_a.caption("Formatting summary for LinkedIn post using LLM...")
+        
+        # Create the prompt
+        prompt = [
+            ("system", "Format the following text into a professional, engaging LinkedIn post. Include relevant hashtags."),
+            ("human", f"Blog Heading: {blog_heading}\nSummary: {summary}\nBlog URL: {blog_url}")
+        ]
+
+        # Get the response from the LLM
+        try:
+            response = self.assistant.respond(prompt)
+            linkedin_post = response.content  # Extract the content of the response
+        except Exception as e:
+            linkedin_post = f"Error during LinkedIn post formatting: {e}"
+
+        st_a.write("-------------------------------------------------------------")
+        st_a.write(":blue[Formatted LinkedIn Post:]")
+        st_a.markdown(linkedin_post)
+        return linkedin_post

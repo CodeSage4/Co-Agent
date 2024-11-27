@@ -33,8 +33,8 @@ if master_url:
     driver = webdriver.Edge(service=service, options=options)
 
     # Open the Google AI blog page
-    st.write("Scraping articles from Google AI blog...")
-    driver.get("https://blog.google/technology/ai/")
+    st.write("Scraping articles from the blogsite...")
+    driver.get(master_url)
 
     # Wait for the articles to load
     WebDriverWait(driver, 30).until(
