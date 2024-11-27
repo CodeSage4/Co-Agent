@@ -48,10 +48,12 @@ def get_blog_url(blog_id):
 
 def scrape_blog(master_url:str):
     # Initialize the Edge driver
-    driver_dir = os.path.join(os.getcwd(), "edgedriver_win64")
-    st_d.write(driver_dir)
-    driver_path = os.path.join(driver_dir, "msedgedriver.exe")
-    st_d.write(driver_path)
+    driver_dir = os.path.join(os.getcwd(), "edgedriver_linux64")
+    driver_path = os.path.join(driver_dir, "msedgedriver")
+
+    if not os.path.exists(driver_path):
+        raise FileNotFoundError(f"Edge WebDriver not found at {driver_path}. Please ensure it is placed in the 'edgedriver_linux64' folder.")
+
     service = EdgeService(executable_path=driver_path)
     options = webdriver.EdgeOptions()
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
