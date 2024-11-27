@@ -73,7 +73,6 @@ def scrape_blog(master_url:str):
 
     except Exception as e:
         st_d.error(f"An error occurred: {e}")
-        driver.quit()
 
     global database
     # Store the article in the database
