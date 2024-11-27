@@ -16,6 +16,7 @@ streamlit = "^1.40.1"
 python-dotenv = "^1.0.1"
 selenium = "^4.27.0"
 bs4 = "^0.0.2"
+webdriver-manager = "^4.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.0"
