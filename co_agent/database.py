@@ -1,13 +1,8 @@
-# linkedin_summarizer/database.py
-import os
 import streamlit as st_d
-from selenium import webdriver
-from selenium.webdriver.edge.service import Service as EdgeService
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
 from bs4 import BeautifulSoup
-# Simulated Shared Database (replace with a real database connection for production)
+
+
 database = {
     # "blog_1": {
     #     "blog_heading": "The Power of Consistency in Achieving Goals",
@@ -47,30 +42,21 @@ def get_blog_url(blog_id):
     return f"https://co-agent.streamlit.app/{blog_id}" if blog_data else None
 
 def scrape_blog(master_url:str):
-    # Initialize the Edge driver
-    driver_dir = os.path.join(os.getcwd(), "edgedriver_linux64")
-    driver_path = os.path.join(driver_dir, "msedgedriver")
-
-    if not os.path.exists(driver_path):
-        raise FileNotFoundError(f"Edge WebDriver not found at {driver_path}. Please ensure it is placed in the 'edgedriver_linux64' folder.")
-
-    service = EdgeService(executable_path=driver_path)
-    options = webdriver.EdgeOptions()
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-
-    # Set up the Edge WebDriver for scraping
-    driver = webdriver.Edge(service=service, options=options)
-
-    # Open the Google AI blog page
-    st_d.write("Scraping articles from the blogsite...")
-    driver.get(master_url)
+    
 
     try:
-        # Wait for the page to load
-        WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        # Send an HTTP GET request to the blog URL
+        response = requests.get(master_url, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        })
+
+        # Check if the request was successful
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch the blog. Status code: {response.status_code}")
+
 
         # Parse the page source with BeautifulSoup
-        soup = BeautifulSoup(driver.page_source, "html.parser")
+        soup = BeautifulSoup(response.text, "html.parser")
 
         # Extract the heading (assumes h1 is used for the main title)
         heading = soup.find("h1")
@@ -79,9 +65,6 @@ def scrape_blog(master_url:str):
         # Extract the content (assumes content is within <p> tags)
         paragraphs = soup.find_all("p")
         content = "\n".join(p.text.strip() for p in paragraphs) if paragraphs else "Content not found"
-
-        # Close the driver
-        driver.quit()
 
         # Display the scraped information
         st_d.subheader("Scraped Blog:")
