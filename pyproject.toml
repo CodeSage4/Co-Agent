@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "linkedin-summarizer"
+name = "co_agent"
 version = "0.1.0"
 description = "A Multi-Agent Library to create Linkedin posts from Blog Posts"
 authors = ["Dhruv Kumar <141584754+SnookyDru@users.noreply.github.com>"]
 readme = "README.md"
 packages = [
-    { include = "linkedin_summarizer" }
+    { include = "co_agent" }
 ]
 
 [tool.poetry.dependencies]
@@ -15,12 +15,13 @@ langchain = "^0.3.7"
 streamlit = "^1.40.1"
 python-dotenv = "^1.0.1"
 selenium = "^4.27.0"
+bs4 = "^0.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.0"
 
 [tool.poetry.scripts]
-linkedin-summarizer = "linkedin_summarizer.__main__:main"
+co_agent = "co_agent.__main__:main"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,5 +1,5 @@
 # tests/test_main.py
-from linkedin_summarizer import AssistantAgent, UserProxyAgent, llm_config
+from co_agent import AssistantAgent, UserProxyAgent, llm_config
 
 
 

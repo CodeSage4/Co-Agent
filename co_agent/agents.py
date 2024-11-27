@@ -59,12 +59,12 @@ class UserProxyAgent:
         ]
         return self.assistant.respond(prompt)
 
-    def initiate_summary_process(self, blog_id: str):
+    def initiate_postmaking_process(self, blog_id: str):
         blog_data = get_blog_data(blog_id)
         blog_heading = get_blog_heading(blog_id)
         blog_url = get_blog_url(blog_id)
         formatter = Formatter(self.assistant)
-        
+
         if not blog_data:
             st_a.write("-------------------------------------------------------------")
             st_a.write(" :violet[ASSISTANT:]")
@@ -134,15 +134,12 @@ class UserProxyAgent:
 class Formatter(BaseAgent):
     def __init__(self, assistant: AssistantAgent):
         self.assistant = assistant  # Use the AssistantAgent to interact with the LLM
-        st_a.write("-------------------------------------------------------------")
-        st_a.write(" :blue[FORMATTING:]")
-        st_a.caption("Initializing Formatter...")
-
+        
     def format_for_linkedin(self, summary: str, blog_heading: str, blog_url: str):
         """
         Formats the summary into a LinkedIn-ready post using the LLM.
         """
-        st_a.write("-------------------------------------------------------------")
+        st_a.write(" :blue[FORMATTER:]")
         st_a.caption("Formatting summary for LinkedIn post using LLM...")
         
         # Create the prompt

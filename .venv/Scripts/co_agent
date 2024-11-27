@@ -1,0 +1,6 @@
+#!C:\Users\Dhruv\Desktop\Prodigal\Linkedin_Summarizer\Co-Agent\.venv\Scripts\python.exe
+import sys
+from co_agent.__main__ import main
+
+if __name__ == '__main__':
+    sys.exit(main())

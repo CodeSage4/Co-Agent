@@ -1,0 +1,3 @@
+[console_scripts]
+co_agent=co_agent.__main__:main
+
