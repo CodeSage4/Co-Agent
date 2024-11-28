@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "coagent-framework"
+version = "0.2.1"
+description = "A Multi-Agent Library to create Linkedin posts from Blog Posts"
+authors = ["Dhruv Kumar <141584754+SnookyDru@users.noreply.github.com>"]
+readme = "README.md"
+packages = [
+    { include = "co_agent" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.12.4"
+langchain-google-genai = "^2.0.4"
+langchain = "^0.3.7"
+bs4 = "^0.0.2"
+requests = "^2.32.3"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.0"
+
+[tool.poetry.scripts]
+co_agent = "co_agent.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
