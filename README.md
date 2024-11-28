@@ -1,5 +1,3 @@
-Here's the detailed README in Markdown format:
-
 # Co-Agent: Multi-Agent Conversational Framework  
 
 [![PyPI version](https://badge.fury.io/py/coagent-framework.svg)](https://pypi.org/project/coagent-framework/)  
